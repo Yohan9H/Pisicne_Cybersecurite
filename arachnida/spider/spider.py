@@ -48,6 +48,7 @@ try:
         if not os.path.exists(folder_img):
             os.makedirs(folder_img)
     else:
+        print("here3")
         raise Exception
 
     soup = bs4.BeautifulSoup(response.text, "html.parser")
@@ -56,7 +57,6 @@ try:
         counter = 1
     else:
         img = soup.find_all("img")
-
         counter = 1
         for img_tag in img:
             url_img = urllib.parse.urljoin(url_web, img_tag["src"])
