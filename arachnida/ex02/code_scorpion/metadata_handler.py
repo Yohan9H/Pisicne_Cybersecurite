@@ -1,5 +1,6 @@
 from PIL import Image
 from PIL.ExifTags import TAGS
+from PIL.PngImagePlugin import PngInfo
 import piexif
 import logging
 
@@ -11,16 +12,26 @@ def get_image_metadata(image_path):
             metadata['Format'] = image.format
             metadata['Size'] = image.size
             metadata['Mode'] = image.mode
-            exif_data = image.getexif()
-            if exif_data:
-                for code, value in exif_data.items():
-                    tag_name = TAGS.get(code, code)
+
+            if image.format == 'JPEG':
+                exif_data = image.getexif()
+                if exif_data:
+                    for code, value in exif_data.items():
+                        tag_name = TAGS.get(code, code)
+                        if isinstance(value, bytes):
+                            try:
+                                value = value.decode('utf-8', errors='ignore')
+                            except (UnicodeDecodeError, AttributeError):
+                                pass
+                        metadata[tag_name] = value
+            elif image.format in ['PNG', 'GIF']:
+                for key, value in image.info.items():
                     if isinstance(value, bytes):
                         try:
-                            value = value.decode('utf-8', errors='ignore')
+                            value = value.decode('utf-8', errors='ignore').strip('\x00')
                         except (UnicodeDecodeError, AttributeError):
-                            pass
-                    metadata[tag_name] = value
+                             pass
+                    metadata[key] = value
             return metadata
     except Exception as e:
         logging.error(f"Pillow could not read {image_path}: {e}")
@@ -44,25 +55,52 @@ def find_tag_info(tag_name):
     return None, None
 
 def set_image_tag(filepath, tag_name, value):
-    ifd_name, tag_code = find_tag_info(tag_name)
-
-    if not ifd_name:
-        print(f"Error: Tag '{tag_name}' is not supported EXIF tag.")
-        return False
-
     try:
-        exif_dict = piexif.load(filepath)
-        try:
-            final_value = int(value)
-        except ValueError:
-            final_value = str(value).encode("utf-8")
+        with Image.open(filepath) as img:
+            image_format = img.format
 
-        ifd_dict = exif_dict.setdefault(ifd_name, {})
-        ifd_dict[tag_code] = final_value
+        if image_format == 'JPEG':
+            ifd_name, tag_code = find_tag_info(tag_name)
+            if not ifd_name:
+                print(f"Error: Tag '{tag_name}' is not supported EXIF tag.")
+                return False
 
-        exif_bytes = piexif.dump(exif_dict)
-        piexif.insert(exif_bytes, filepath)
-        return True
+            exif_dict = piexif.load(filepath)
+            try:
+                final_value = int(value)
+            except ValueError:
+                final_value = str(value).encode("utf-8")
+
+            ifd_dict = exif_dict.setdefault(ifd_name, {})
+            ifd_dict[tag_code] = final_value
+
+            exif_bytes = piexif.dump(exif_dict)
+            piexif.insert(exif_bytes, filepath)
+            return True
+
+        elif image_format == 'PNG':
+            with Image.open(filepath) as img:
+                png_info = PngInfo()
+                print(img.info)
+                if img.info:
+                    for key, val in img.info.items():
+                        if key.lower() != tag_name.lower():
+                            png_info.add_text(key, str(val))
+                png_info.add_text(tag_name, str(value))
+                img.save(filepath, pnginfo=png_info)
+            return True
+
+        elif image_format == 'GIF':
+            with Image.open(filepath) as img:
+                img.save(filepath, comment=str(value).encode('utf-8'))
+            return True
+
+        elif image_format == "BMP":
+            logging.error("Error: The BMP format does not support metadata modification.")
+            return False
+
+        else:
+            logging.error(f"Error: Metadata modification for {image_format} is not supported.")
     except Exception as e:
         logging.error(f"Error writing tag '{tag_name}' to {filepath}: {e}")
         return False
