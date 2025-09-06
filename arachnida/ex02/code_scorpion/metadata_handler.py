@@ -81,7 +81,6 @@ def set_image_tag(filepath, tag_name, value):
         elif image_format == 'PNG':
             with Image.open(filepath) as img:
                 png_info = PngInfo()
-                print(img.info)
                 if img.info:
                     for key, val in img.info.items():
                         if key.lower() != tag_name.lower():
@@ -106,29 +105,79 @@ def set_image_tag(filepath, tag_name, value):
         return False
 
 def remove_image_tag(filepath, tag_name):
-    ifd_name, tag_code = find_tag_info(tag_name)
-
-    if not ifd_name:
-        print(f"Error: Tag '{tag_name}' is not a known EXIF tag.")
-        return False
-
     try:
-        exif_dict = piexif.load(filepath)
-        if ifd_name in exif_dict and tag_code in exif_dict[ifd_name]:
-            del exif_dict[ifd_name][tag_code]
-            exif_bytes = piexif.dump(exif_dict)
-            piexif.insert(exif_bytes, filepath)
+        with Image.open(filepath) as img:
+            image_format = img.format
+
+        if image_format == 'JPEG':
+            ifd_name, tag_code = find_tag_info(tag_name)
+            if not ifd_name:
+                print(f"Error: Tag '{tag_name}' is not a known EXIF tag for JPEG.")
+                return False
+
+            exif_dict = piexif.load(filepath)
+            if ifd_name in exif_dict and tag_code in exif_dict[ifd_name]:
+                del exif_dict[ifd_name][tag_code]
+                exif_bytes = piexif.dump(exif_dict)
+                piexif.insert(exif_bytes, filepath)
+            else:
+                print(f"Info: Tag '{tag_name}' not found in the file, nothing to remove.")
+            return True
+
+        elif image_format == 'PNG':
+            with Image.open(filepath) as img:
+                png_info = PngInfo()
+                if img.info:
+                    for key, val in img.info.items():
+                        if key.lower() != tag_name.lower():
+                            png_info.add_text(key, str(val))
+                img.save(filepath, pnginfo=png_info)
+            return True
+
+        elif image_format == 'GIF':
+            with Image.open(filepath) as img:
+                img.save(filepath, comment=b'')
+            return True
+
+        elif image_format == "BMP":
+            logging.info("BMP format does not support metadata modification.")
+            return True
+
         else:
-            print(f"Info: Tag '{tag_name}' not found in the file, nothing to remove.")
-        return True
+            logging.error(f"Error: Metadata removal for {image_format} is not supported.")
+            return False
     except Exception as e:
         logging.error(f"Error removing tag '{tag_name}' from {filepath}: {e}")
         return False
 
 def remove_all_metadata(filepath):
     try:
-        piexif.remove(filepath)
-        return True
+        with Image.open(filepath) as img:
+            image_format = img.format
+
+        if image_format == 'JPEG':
+            piexif.remove(filepath)
+            return True
+
+        elif image_format == 'PNG':
+            with Image.open(filepath) as img:
+                img.save(filepath)
+            return True
+
+        elif image_format == 'GIF':
+            with Image.open(filepath) as img:
+                img.save(filepath, comment=b'')
+            return True
+
+        elif image_format == "BMP":
+            logging.info("BMP format does not support metadata.")
+            return True
+            
+        else:
+            with Image.open(filepath) as img:
+                img.save(filepath)
+            return True
+
     except Exception as e:
-        logging.error(f"Error removing all EXIF data from {filepath}: {e}")
+        logging.error(f"Error removing all metadata from {filepath}: {e}")
         return False
