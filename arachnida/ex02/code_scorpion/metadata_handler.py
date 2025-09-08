@@ -90,6 +90,9 @@ def set_image_tag(filepath, tag_name, value):
             return True
 
         elif image_format == 'GIF':
+            if not tag_name == 'comment':
+                logging.error(f"Error: '{tag_name}' is not supported, only comment for GIF")
+                return False
             with Image.open(filepath) as img:
                 img.save(filepath, comment=str(value).encode('utf-8'))
             return True
@@ -135,6 +138,9 @@ def remove_image_tag(filepath, tag_name):
             return True
 
         elif image_format == 'GIF':
+            if not tag_name == 'comment':
+                logging.error(f"Error: '{tag_name}' is not supported, only comment for GIF")
+                return False
             with Image.open(filepath) as img:
                 img.save(filepath, comment=b'')
             return True
