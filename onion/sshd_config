@@ -1,0 +1,18 @@
+Port 4242
+
+ListenAddress 0.0.0.0
+
+PermitRootLogin no
+
+PasswordAuthentication yes
+
+ChallengeResponseAuthentication no
+UsePAM no
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+SyslogFacility AUTH
+LogLevel INFO
+
+PermitEmptyPasswords no
+
+AcceptEnv LANG LC_*
