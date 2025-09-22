@@ -15,7 +15,10 @@ RUN dpkg --add-architecture i386 && \
     build-essential \
     cmake \
     file \
-    python3
+    python3 && \
+    git clone https://github.com/longld/peda.git ~/peda && \
+    echo "source ~/peda/peda.py" >> ~/.gdbinit && \
+    echo "DONE! debug your program with gdb and enjoy"
 
 COPY level1 /level1
 COPY level2 /level2
