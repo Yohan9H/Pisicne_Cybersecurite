@@ -23,9 +23,9 @@ RUN dpkg --add-architecture i386 && \
     vim \
     && rm -rf /var/lib/apt/lists/*
 
-COPY level1 /level1
-COPY level2 /level2
-RUN chmod +x /level1 /level2
+COPY lvl1 /lvl1
+COPY lvl2 /lvl2
+RUN chmod +x lvl1/level1 lvl2/level2
 
 RUN git clone --depth=1 https://github.com/pwndbg/pwndbg /opt/pwndbg && \
     cd /opt/pwndbg && \
