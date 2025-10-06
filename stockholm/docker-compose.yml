@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  stockholm-dev:
+    build: .
+    container_name: stockholm
+    volumes:
+      - .:/home/student/app
+    tty: true
