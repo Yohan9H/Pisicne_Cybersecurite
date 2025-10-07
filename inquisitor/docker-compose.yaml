@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  attacker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: attacker
+    privileged: true
+    volumes:
+      - .:/app
+    networks:
+      inquisitor_net:
+        ipv4_address: 10.0.0.10
+    tty: true
+    stdin_open: true
+
+  victim:
+    image: alpine:latest
+    container_name: victim
+    command: sh -c "apk update && apk add lftp && tail -f /dev/null"
+    networks:
+      inquisitor_net:
+        ipv4_address: 10.0.0.20
+    tty: true
+    stdin_open: true
+    depends_on:
+      - attacker
+
+  ftp-server:
+    image: stilliard/pure-ftpd
+    container_name: ftp-server
+    environment:
+      - "PUBLICHOST=10.0.0.30"
+      - "FTP_USER_NAME=testuser"
+      - "FTP_USER_PASS=testpass"
+      - "FTP_USER_HOME=/home/testuser"
+    networks:
+      inquisitor_net:
+        ipv4_address: 10.0.0.30
+    expose:
+      - "21"
+      - "30000-30009"
+    depends_on:
+      - attacker
+
+networks:
+  inquisitor_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
