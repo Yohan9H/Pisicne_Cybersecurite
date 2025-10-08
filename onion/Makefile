@@ -1,6 +1,6 @@
 IMAGE_NAME      := onion-service
 CONTAINER_NAME  := my-onion-service
-SSH_PORT        := 4242
+SSH_PORT        := 4243
 USER            := user
 
 .PHONY: all build run stop clean logs hostname ssh re help
@@ -13,7 +13,7 @@ build:
 
 run:
 	@echo "Running Docker container [$(CONTAINER_NAME)]..."
-	@docker run -d -p $(SSH_PORT):4242 --name $(CONTAINER_NAME) $(IMAGE_NAME)
+	@docker run -d -p $(SSH_PORT):4243 --name $(CONTAINER_NAME) $(IMAGE_NAME)
 
 stop:
 	@echo "Stopping Docker container [$(CONTAINER_NAME)]..."

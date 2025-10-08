@@ -2,7 +2,7 @@
 
 mkdir -p /run/sshd
 
-echo "Starting SSH server on port 4242..."
+echo "Starting SSH server on port 4243..."
 /usr/sbin/sshd
 
 echo "Starting Nginx web server on port 80..."

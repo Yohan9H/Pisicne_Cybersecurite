@@ -16,7 +16,7 @@ RUN mkdir -p /var/lib/tor/hidden_service && \
     chown -R debian-tor:debian-tor /var/lib/tor/hidden_service && \
     chmod 700 /var/lib/tor/hidden_service
 
-EXPOSE 80 4242
+EXPOSE 80 4243
 
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
